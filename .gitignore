@@ -1,0 +1,11 @@
+/app_home
+/build
+target/bin/on_time_trading_win64d.dll
+/target/bin/on_time_trading_win64.dll
+/target/bin/on_time_trading_win64d.dll
+/target/bin/.dat
+/target/bin/apiConfig copy.ini
+/target/bin/logs
+/target/bin/apiLogs
+/target/bin/conn
+/target/config/GreatWall copy.json

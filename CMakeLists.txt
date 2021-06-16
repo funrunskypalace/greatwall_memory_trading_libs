@@ -1,0 +1,222 @@
+# CMake file for StratRunner
+# ref: cmake file for duilib.
+cmake_minimum_required(VERSION 3.5)
+set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING INTERNAL FORCE)
+set(ENV{VCPKG_ROOT}     d:/dev/vcpkg)
+set(ENV{OOSTYPE}        OpenOrder)
+set(ENV{OSVER}          win64)      # linux, win32, or win64
+set(OSX86               off)         # on, off
+set(ENABLE_MANAGE_SDK   off)     # @todo: support linux
+set(ENV{JAVA_INC}       "C:/Program Files/Java/jdk1.8.0_291/include")
+set(USE_JNI on)
+
+###################################################################################
+project(GreatWall_MemTrading_Apps_$ENV{OSVER} VERSION 1.1.3 
+        DESCRIPTION "C++ Trading framework library"
+        HOMEPAGE_URL http://greatwall.org
+        LANGUAGES CXX )
+
+IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  SET(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/target CACHE PATH "by openorder" FORCE)
+ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
+message("*************************************************************")
+message("**                                                         **")
+message("**                                                         **")
+message("**  Notice! You are building GreatWall_MemTrading_Apps   !!**")
+message("**                                                         **")
+message("**                                                         **")
+message("*************************************************************")
+
+set(StratRunnerSrcDir               ${PROJECT_SOURCE_DIR})
+set(OpenOrderDistDir                ${PROJECT_SOURCE_DIR})
+set(OrderRouterSrcDir               ${PROJECT_SOURCE_DIR}/../QTSF_OrderRouter)
+set(GreatWallAdaptersSrcDir         ${PROJECT_SOURCE_DIR}/../GreatWallAdapters)
+set(OrchidCommonLibraryRef          orchid_common_$ENV{OSVER}$<$<CONFIG:Debug>:d>)
+set(OpenOrderLibraryRef             OpenOrder_$ENV{OSVER}$<$<CONFIG:Debug>:d>)
+set(StratFrameworkCommonLibraryRef  strat_framework_common_$ENV{OSVER}$<$<CONFIG:Debug>:d>)
+set(StratFrameworkLibraryRef        skypalace_framework_$ENV{OSVER}$<$<CONFIG:Debug>:d>)
+set(CMAKE_MODULE_PATH               ${CMAKE_SOURCE_DIR}/CMake)
+set(CMAKE_SYSTEM_PREFIX_PATH        ${OpenOrderDistDir})
+include(cotire)
+if(UNIX)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    include(/usr/local/lib64/cmake/absl/abslConfig.cmake)
+else()
+    include(PrecompiledHeader)
+endif()
+
+#include(cxx14)
+include(CheckCXXCompilerFlag)
+set(CMAKE_CXX_STANDARD 17)
+
+include_directories(${PROJECT_SOURCE_DIR}/third/)
+# put abseil included first to avoid compilation failure.
+add_subdirectory (third)
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+      "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
+
+foreach(path ${CMAKE_PREFIX_PATH})
+  message("Path: " ${path})
+endforeach(path)
+
+if(UNIX)
+    #if(__linux__)
+    #else()
+    add_definitions(-D__linux__)
+    #endif()
+else()
+    if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+        add_definitions(-DWIN64)
+        add_definitions(-D_WIN64)
+        #set(BOOST_LIBRARY "/boost/win64/lib" )
+    else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+        set(BOOST_LIBRARY "/boost/win32/lib" )
+    endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+
+    add_definitions(-DWIN32 -D_WIN32 -DWINDOWS)
+    add_definitions(-D_WIN32_WINNT=0x0600)
+    if(_CRT_NO_TIME_T)
+        add_definitions(-D_CRT_NO_TIME_T)
+    endif()
+endif()
+
+add_definitions(-DPROTOBUF_USE_DLLS)
+add_definitions(-DSPDLOG_FMT_EXTERNAL)
+if(ENABLE_MANAGE_SDK)
+add_definitions(-DENABLE_MANAGE_SDK)
+endif()
+add_definitions(-DNOMINMAX)
+add_definitions(-DUNICODE)
+add_definitions(-DSPDLOG_FMT_EXTERNAL)
+add_definitions(-DFMT_HEADER_ONLY=1)
+add_definitions(-DORCHID_STATIC=1)
+#default add for develop
+if(UNIX)
+    add_definitions(-DEVENT__SIZEOF_LONG_LONG=8)
+    add_definitions(-DEVENT__SIZEOF_LONG=4)
+    add_definitions(-DEVENT__SIZEOF_SHORT=2)
+    add_definitions(-DEVENT__HAVE_PTHREADS)
+else()
+endif()
+if(ORCHID_STATIC)
+    add_definitions(-DORCHID_STATIC=1)
+endif()
+
+# Command to output information to the console
+# Useful for displaying errors, warnings, and debugging
+message(STATUS," CMake project files for GreatWall framework, 2019-09-25")
+message("------------ Options -------------")
+message("PROJECT_SOURCE_DIR:          ${PROJECT_SOURCE_DIR}")
+message("CMAKE_CURRENT_SOURCE_DIR:    ${CMAKE_CURRENT_SOURCE_DIR}")
+message("PROJECT_BINARY_DIR:          ${PROJECT_BINARY_DIR}")
+message("CMAKE_BUILD_TYPE:            ${CMAKE_BUILD_TYPE}")
+message("CMAKE_TOOLCHAIN_FILE:        ${CMAKE_TOOLCHAIN_FILE}")
+message("OSVER:                       $ENV{OSVER}, x86=${OSX86}")
+message("OOSTYPE:                     $ENV{OOSTYPE}")
+
+#set(CMAKE_VERBOSE_MAKEFILE ON)
+
+# Turn on the ability to create folders to organize projects (.vcproj)
+# It creates "CMakePredefinedTargets" folder by default and adds CMake
+# defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    if(CMAKE_SYSTEM MATCHES "Linux")
+        set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++17") # ALL WARNINGS
+    endif()
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -O3") # ALL WARNINGS
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /MP")    # MULTICORE BUILDS
+endif()
+
+if (UNIX)
+    add_definitions(-DLINUX -D_REENTRANT -D_FILE_OFFSET_BITS=64 -DAC_HAS_INFO -DAC_HAS_WARNING 
+        -DAC_HAS_ERROR -DAC_HAS_CRITICAL -DTIXML_USE_STL -DHAVE_CXX_STDHEADERS ${CMAKE_CXX_FLAGS})
+    add_compile_options(-g -fPIC -shared -Wno-unused-variable -Wno-unknown-pragmas -Wno-unused-value
+        -Wno-sign-compare -Wno-pragmas -Wno-pointer-arith -Wno-write-strings -Wno-main -Wno-unused-result
+        -fpermissive -Wno-switch -Wno-reorder -Wno-deprecated -Wno-deprecated-declarations
+        -Wl,-Bsymbolic,--unresolved-symbols=ignore-in-object-files -Wno-comment -Wno-return-type
+        -Wno-enum-compare -Wno-format -Wno-parentheses -Wno-delete-incomplete -Wno-unused-parameter
+        -Wno-strict-aliasing -Wno-unused-function
+        )
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+    set(CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+else()
+    if(USE_CTP_MINI)
+        set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DYNAMICBASE:NO") 
+    endif()
+
+#if (MSVC_VERSION GREATER_EQUAL "1900")
+#    include(CheckCXXCompilerFlag)
+#    CHECK_CXX_COMPILER_FLAG("/std:c++latest" _cpp_latest_flag_supported)
+#    if (_cpp_latest_flag_supported)
+#        add_compile_options("/std:c++latest")
+#    endif()
+#endif()
+endif()
+
+# Set compiler flags and options. 
+# Here it is setting the Visual Studio warning level to 4
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+
+if (UNIX)
+    SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
+    SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
+else ()
+    if(WIN32MT)
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /EHsc /wd4275 /wd4251 /wd4819 /wd4669")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT /EHsc")
+    else()
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd /EHsc /wd4275 /wd4251 /wd4819 /wd4669")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD /EHsc")
+    endif()
+endif()
+
+# Properties->C/C++->General->Additional Include Directories
+include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/source)
+include_directories(${PROJECT_SOURCE_DIR}/application)
+include_directories(${OrderRouterSrcDir}/include/)
+include_directories(${OrderRouterSrcDir}/api/)
+
+if(UNIX)
+    include_directories(${PROJECT_SOURCE_DIR}/source/compat/linux)
+else()
+    include_directories(${PROJECT_SOURCE_DIR}/third/libevent/source/include/)
+    include_directories(${PROJECT_SOURCE_DIR}/third/spdlog/include)
+    if(OSX86)
+        include_directories($ENV{VCPKG_ROOT}/installed/x86-windows/include)
+        include_directories(${PROJECT_SOURCE_DIR}/source/compat/win32)
+    else()
+        include_directories($ENV{VCPKG_ROOT}/installed/x64-windows/include)
+        include_directories(${PROJECT_SOURCE_DIR}/source/compat/$ENV{OSVER})
+    endif()
+endif()
+
+### Library dependencies
+
+if(UNIX)
+    link_directories(/usr/local/lib)
+    link_directories(/usr/local/protobuf/lib)
+else()
+    if(OSX86)
+        link_directories($ENV{VCPKG_ROOT}/installed/x86-windows/$<$<CONFIG:Debug>:debug/>lib)
+        link_directories($ENV{VCPKG_ROOT}/installed/x86-windows/lib)
+    else()
+        link_directories($ENV{VCPKG_ROOT}/installed/x64-windows/$<$<CONFIG:Debug>:debug/>lib)
+        link_directories($ENV{VCPKG_ROOT}/installed/x64-windows/lib)
+    endif()
+endif()
+
+link_directories(${OrderRouterSrcDir}/target/lib)
+link_directories(${StratRunnerSrcDir}/target/lib)
+
+### projects
+
+add_subdirectory (examples)
+add_subdirectory (application)

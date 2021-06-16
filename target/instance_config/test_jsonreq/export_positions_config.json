@@ -1,0 +1,26 @@
+{
+  "instruments": [],
+  "instruments_bk": [],
+  "strategy": {
+    "description": "export positions.",
+    "output_path": "./../",
+    "first_line": "Ticker, open, target, forecast, yst, current,"
+  },
+  "timers": [
+    {
+      "timer1": {
+        "interval_ms": 100
+      }
+    }
+  ],
+  "transaction": {
+    "TimeoutMicroseconds": 3000000,
+    "CancelOnTimeout": true,
+    "CloseOnTimeout": false,
+    "ExposureDeadlineMicroseconds": 13000000,
+    "MaxCancelTimes": 3,
+    "CancelIntervalMicro": 1000000,
+    "MaxSendTimes": 30,
+    "MaxAmountDiffPercent": 0.05
+  }
+}

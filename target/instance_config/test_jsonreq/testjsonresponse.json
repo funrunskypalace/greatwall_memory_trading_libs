@@ -1,0 +1,65 @@
+[
+  {
+    "ChannelID": 10001,
+    "InvestorID": 10010001,
+    "ORRequestID": 70000001,
+    "OrderLocalID": "120000001",
+    "OrderRef": "1",
+    "ThirdReff1": "",
+    "ThirdReff2": "",
+    "Remark": "委托执行回复信息，包含委托状态变化。",
+    "IsLast": true,
+    "ErrorID": 0,
+    "ErrorMsg": "success",
+    "FrontID": 0,
+    "SessionID": 0,
+    "JsonTypeID": 3301,
+    "JsonContent": {
+      "StrategyId": "KKS",
+      "SecondaryOrderId": "2021042610004201",
+      "CounterOrderID": "4565",
+      "OrderSysID": "AGZX00001F",
+      "OrderStatus": 2,
+      "OrderVolume": 1,
+      "Data": [
+        {
+          "ExchangeID": "SH",
+          "InstrumentID": "10003348",
+          "OptionsType": "C",
+          "PosiDirection": "1",
+          "CoveredFlag": "",
+          "Volume": 1
+        }
+      ]
+    }
+  },
+  {
+    "ChannelID": 10001,
+    "InvestorID": 10010001,
+    "ORRequestID": 70000001,
+    "OrderLocalID": "120000002",
+    "OrderRef": "2",
+    "ThirdReff1": "",
+    "ThirdReff2": "",
+    "Remark": "查询回复信息。",
+    "IsLast": true,
+    "ErrorID": 0,
+    "ErrorMsg": "success",
+    "JsonTypeID": 3302,
+    "JsonContent": {
+      "ExchangeID": "",
+      "SecondaryOrderId": "",
+      "Data": [
+        {
+          "ExchangeID": "SH",
+          "InstrumentID": "10003292",
+          "PosiDirection": "1",
+          "CoveredFlag": "",
+          "Volume": 1
+        }
+      ]
+    },
+    "FrontID": 0,
+    "SessionID": 0
+  }
+]

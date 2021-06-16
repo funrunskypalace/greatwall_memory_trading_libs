@@ -1,0 +1,60 @@
+{
+  "instruments": [
+    {
+      "leg1": {
+        "channel_id": 10001,
+        "investor_id": 10010001,
+        "product_class": "2",
+        "exchange_id": "CFFEX",
+        "instrument_id": "IO2103-C-6000",
+        "volume": 1,
+        "price_open": 105.4,
+        "price_close": 125.4,
+        "direction_open": "0",
+        "direction_close": "1",
+        "offset_flag_open": "0",
+        "offset_flag_close": "1",
+        "hedge_flag": "1",
+        "resend": true,
+        "suppressing": true,
+        "protection_price_lower": 100.0,
+        "protection_price_upper": 110.0,
+        "protection_bidask_spread": 5,
+        "price_shift": 2
+      }
+    }
+  ],
+  "instruments_bk": [],
+  "strategy": {
+    "description": "execute on time.",
+    "execution_mode": 1,
+    "execution_mode_desc": "1: open, 2: close",
+    "is_executing": false,
+    "trading_period_protection": [
+      { "start": 93000000, "end": 112700000 },
+      { "start": 130100000, "end": 235700000 }
+    ],
+    "trading_day": 20210217,
+    "on_start_time": 92959700,
+    "on_stop_time": 93010000,
+    "max_rejection_times": 10,
+    "max_cancel_times": 10
+  },
+  "timers": [
+    {
+      "timer1": {
+        "interval_ms": 100
+      }
+    }
+  ],
+  "transaction": {
+    "TimeoutMicroseconds": 3000000,
+    "CancelOnTimeout": true,
+    "CloseOnTimeout": false,
+    "ExposureDeadlineMicroseconds": 13000000,
+    "MaxCancelTimes": 3,
+    "CancelIntervalMicro": 1000000,
+    "MaxSendTimes": 30,
+    "MaxAmountDiffPercent": 0.05
+  }
+}
