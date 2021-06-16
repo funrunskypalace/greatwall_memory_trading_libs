@@ -15,12 +15,22 @@ Please copy `/target/bin` to `/app_home/bin` each time after git pull.
 
 # Dev Guide
 
+## Linux
+
+- Install gcc/g++ 7.3.0 or newer version.
+- Install CMake 3.15 or newer version.
+- got to /scripts directory, run linux.sh.
+
+target binaries and libraries will be copied to both /target and /app_home directories.
+
+Note: Pre-compiled binaries for linux is not provided currently, please contact me if need. Get me by WeChat funrun2019.
+
 ## Windows
 
 Steps:
 
 - Install Visual Stuido 2019.
-- Install CMake 3.15 upper.
+- Install CMake 3.15 or newer version.
 - Git clone vcpkg from github, get vcpkg.exe, and then add exe path to system variable.
 - go to /scripts directory, run x64_2019.bat for VS2019 and x64 environment.
 - go to /build directory, got VS2019 sln file.
